@@ -46,7 +46,7 @@ IntegrationFunction::MakeIntegrationFunctionWithParamTuples(
     std::string tuple_name = source_func->name() + std::string("ParamTuple");
     XLS_ASSIGN_OR_RETURN(
         Node * args_tuple,
-        integration_function->function_->MakeNode<Param>(
+        integration_function->function_->MakeNodeWithName<Param>(
             /*loc=*/std::nullopt, tuple_name, args_tuple_type));
 
     // Add TupleIndex nodes inside function to unpack tuple parameter.

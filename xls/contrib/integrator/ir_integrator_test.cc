@@ -122,11 +122,11 @@ TEST_F(IntegratorTest, MappingTestSimple) {
 
   XLS_ASSERT_OK_AND_ASSIGN(
       Node * internal_1,
-      internal_func.MakeNode<Param>(/*loc=*/std::nullopt, "internal_1",
+      internal_func.MakeNodeWithName<Param>(/*loc=*/std::nullopt, "internal_1",
                                     p->GetBitsType(1)));
   XLS_ASSERT_OK_AND_ASSIGN(
       Node * external_1,
-      external_func.MakeNode<Param>(/*loc=*/std::nullopt, "external_1",
+      external_func.MakeNodeWithName<Param>(/*loc=*/std::nullopt, "external_1",
                                     p->GetBitsType(2)));
 
   // Before mapping.
@@ -172,15 +172,15 @@ TEST_F(IntegratorTest, MappingTestMultipleNodesMapToTarget) {
 
   XLS_ASSERT_OK_AND_ASSIGN(
       Node * internal_1,
-      internal_func.MakeNode<Param>(/*loc=*/std::nullopt, "internal_1",
+      internal_func.MakeNodeWithName<Param>(/*loc=*/std::nullopt, "internal_1",
                                     p->GetBitsType(1)));
   XLS_ASSERT_OK_AND_ASSIGN(
       Node * external_1,
-      external_func.MakeNode<Param>(/*loc=*/std::nullopt, "external_1",
+      external_func.MakeNodeWithName<Param>(/*loc=*/std::nullopt, "external_1",
                                     p->GetBitsType(2)));
   XLS_ASSERT_OK_AND_ASSIGN(
       Node * external_2,
-      external_func.MakeNode<Param>(/*loc=*/std::nullopt, "external_1",
+      external_func.MakeNodeWithName<Param>(/*loc=*/std::nullopt, "external_1",
                                     p->GetBitsType(3)));
 
   // Before mapping.
@@ -238,19 +238,19 @@ TEST_F(IntegratorTest, MappingTestRepeatedMapping) {
 
   XLS_ASSERT_OK_AND_ASSIGN(
       Node * internal_1,
-      internal_func.MakeNode<Param>(/*loc=*/std::nullopt, "internal_1",
+      internal_func.MakeNodeWithName<Param>(/*loc=*/std::nullopt, "internal_1",
                                     p->GetBitsType(1)));
   XLS_ASSERT_OK_AND_ASSIGN(
       Node * internal_2,
-      internal_func.MakeNode<Param>(/*loc=*/std::nullopt, "internal_2",
+      internal_func.MakeNodeWithName<Param>(/*loc=*/std::nullopt, "internal_2",
                                     p->GetBitsType(2)));
   XLS_ASSERT_OK_AND_ASSIGN(
       Node * external_1,
-      external_func.MakeNode<Param>(/*loc=*/std::nullopt, "external_1",
+      external_func.MakeNodeWithName<Param>(/*loc=*/std::nullopt, "external_1",
                                     p->GetBitsType(3)));
   XLS_ASSERT_OK_AND_ASSIGN(
       Node * external_2,
-      external_func.MakeNode<Param>(/*loc=*/std::nullopt, "external_2",
+      external_func.MakeNodeWithName<Param>(/*loc=*/std::nullopt, "external_2",
                                     p->GetBitsType(4)));
 
   // Before mapping.
@@ -321,19 +321,19 @@ TEST_F(IntegratorTest, MappingTestSetNodeMappingFailureCases) {
 
   XLS_ASSERT_OK_AND_ASSIGN(
       Node * internal_1,
-      internal_func.MakeNode<Param>(/*loc=*/std::nullopt, "internal_1",
+      internal_func.MakeNodeWithName<Param>(/*loc=*/std::nullopt, "internal_1",
                                     p->GetBitsType(1)));
   XLS_ASSERT_OK_AND_ASSIGN(
       Node * internal_2,
-      internal_func.MakeNode<Param>(/*loc=*/std::nullopt, "internal_2",
+      internal_func.MakeNodeWithName<Param>(/*loc=*/std::nullopt, "internal_2",
                                     p->GetBitsType(2)));
   XLS_ASSERT_OK_AND_ASSIGN(
       Node * external_1,
-      external_func.MakeNode<Param>(/*loc=*/std::nullopt, "external_1",
+      external_func.MakeNodeWithName<Param>(/*loc=*/std::nullopt, "external_1",
                                     p->GetBitsType(3)));
   XLS_ASSERT_OK_AND_ASSIGN(
       Node * external_2,
-      external_func.MakeNode<Param>(/*loc=*/std::nullopt, "external_2",
+      external_func.MakeNodeWithName<Param>(/*loc=*/std::nullopt, "external_2",
                                     p->GetBitsType(4)));
 
   // Mapping = external_1 -> MapsTo -> external_1
