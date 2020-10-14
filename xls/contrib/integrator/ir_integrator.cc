@@ -125,6 +125,59 @@ IntegrationFunction::GetNodesMappedToNode(const Node* map_target) const {
   return &integrated_node_to_original_nodes_map_.at(map_target);
 }
 
+absl::StatusOr<std::vector<Node*>> IntegrationFunction::GetOperandMappings(
+    const Node* original) const {
+  XLS_RET_CHECK(!IntegrationFunctionOwnsNode(original));
+  std::vector<Node*> operand_mappings;
+  operand_mappings.reserve(original->operands().size());
+
+  for (const auto* operand : original->operands()) {
+    if (!HasMapping(operand)) {
+      return absl::UnimplementedError(
+          "GetOperandMappings for unmapped operands not yet implemented");
+    } else {
+      XLS_ASSIGN_OR_RETURN(Node * operand_map_target, GetNodeMapping(operand));
+      operand_mappings.push_back(operand_map_target);
+    }
+  }
+  return operand_mappings;
+}
+
+absl::StatusOr<Node*> IntegrationFunction::UnifyIntegrationNodes(Node* node_a,
+                                                                 Node* node_b) {
+  XLS_RET_CHECK(IntegrationFunctionOwnsNode(node_a));
+  XLS_RET_CHECK(IntegrationFunctionOwnsNode(node_b));
+  XLS_RET_CHECK_EQ(node_a->GetType(), node_b->GetType());
+
+  // Same node.
+  if (node_a == node_b) {
+    return node_a;
+  }
+
+  // Already created a mux to select between these nodes.
+  // Note that we search for (node_a, node_b) but not for
+  // (node_b, node_a) because a reversed pair implies
+  // an inverted select signal.
+  std::pair<const Node*, const Node*> key = std::make_pair(node_a, node_b);
+  if (node_pair_to_mux_.contains(key)) {
+    return node_pair_to_mux_.at(key);
+  }
+
+  // Create a new mux.
+  std::string select_name =
+      node_a->GetName() + "_" + node_b->GetName() + "_mux_sel";
+  XLS_ASSIGN_OR_RETURN(Node * select, function_->MakeNodeWithName<Param>(
+                                          /*loc=*/std::nullopt, select_name,
+                                          package_->GetBitsType(1)));
+  std::vector<Node*> elements = {node_a, node_b};
+  XLS_ASSIGN_OR_RETURN(Node * mux, function_->MakeNode<Select>(
+                                       /*loc=*/std::nullopt, select, elements,
+                                       /*default_value=*/std::nullopt));
+
+  node_pair_to_mux_[key] = mux;
+  return mux;
+}
+
 bool IntegrationFunction::HasMapping(const Node* node) const {
   return original_node_to_integrated_node_map_.contains(node);
 }

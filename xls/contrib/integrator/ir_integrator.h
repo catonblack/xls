@@ -50,6 +50,18 @@ class IntegrationFunction {
   absl::StatusOr<const absl::flat_hash_set<const Node*>*> GetNodesMappedToNode(
       const Node* map_target) const;
 
+  // Returns a vector of Nodes to which the operands of the non-integration node
+  // 'original' map. If an operand does not yet have a mapping, the operand is
+  // temporarily mapped to a new parameter. Use of this temporary
+  // will be replaced with the real mapping when it is set.
+  absl::StatusOr<std::vector<Node*>> GetOperandMappings(
+      const Node* original) const;
+
+  // For the integration function nodes node_a and node_b,
+  // returns a single integration function node that combines the two
+  // nodes. This may involve adding a mux and parameter select signal.
+  absl::StatusOr<Node*> UnifyIntegrationNodes(Node* node_a, Node* node_b);
+
   // Returns true if 'node' is mapped to a node in the integrated function.
   bool HasMapping(const Node* node) const;
 
@@ -66,6 +78,10 @@ class IntegrationFunction {
   absl::flat_hash_map<const Node*, Node*> original_node_to_integrated_node_map_;
   absl::flat_hash_map<const Node*, absl::flat_hash_set<const Node*>>
       integrated_node_to_original_nodes_map_;
+
+  // Track which node-pairs have an associated mux.
+  absl::flat_hash_map<std::pair<const Node*, const Node*>, Node*>
+      node_pair_to_mux_;
 
   // Integrated function.
   std::unique_ptr<Function> function_;
