@@ -21,6 +21,10 @@
 
 namespace xls {
 
+// Class that represents an integration function i.e. a function combining the
+// IR of other functions. This class tracks which orignal function nodes are
+// mapped to which integration function nodes. It also provides some utilities
+// that are useful for constructing the integrated function.
 class IntegrationFunction {
  public:
   IntegrationFunction() {}
@@ -59,8 +63,7 @@ class IntegrationFunction {
 
  private:
   // Track mapping of original function nodes to integrated function nodes.
-  absl::flat_hash_map<const Node*, Node*>
-      original_node_to_integrated_node_map_;
+  absl::flat_hash_map<const Node*, Node*> original_node_to_integrated_node_map_;
   absl::flat_hash_map<const Node*, absl::flat_hash_set<const Node*>>
       integrated_node_to_original_nodes_map_;
 
