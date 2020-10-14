@@ -45,18 +45,24 @@ class Function {
 
  public:
   explicit Function(absl::string_view name, Package* package)
-      : name_(name),
-        qualified_name_(absl::StrCat(package->name(), "::", name_)),
-        package_(package) {}
+      : package_(package) {
+    SetName(name);
+  }
   virtual ~Function() = default;
 
   Package* package() const { return package_; }
   const std::string& name() const { return name_; }
   const std::string qualified_name() const { return qualified_name_; }
 
+  // Rename the function to 'name'.
+  void SetName(absl::string_view name) {
+    name_ = name;
+    qualified_name_ = absl::StrCat(package_->name(), "::", name_);
+  }
+
   // DumpIr emits the IR in a parsable, hierarchical text format.
   // Parameter:
-  //   'recursive' if true, will dump counted-for body functions as well.
+  //   'recursive' if true, will dump all functions invoked by this function.
   //   This is only useful when dumping individual functions, and not packages.
   virtual std::string DumpIr(bool recursive = false) const;
 
