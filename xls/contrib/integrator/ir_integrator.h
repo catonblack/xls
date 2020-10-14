@@ -21,10 +21,58 @@
 
 namespace xls {
 
+class IntegrationFunction {
+ public:
+  IntegrationFunction() {}
+
+  // Create an IntegrationFunction object that is empty expect for
+  // paramters.
+  static absl::StatusOr<std::unique_ptr<IntegrationFunction>>
+  MakeIntegrationFunctionWithParamTuples(
+      Package* package, absl::Span<const Function* const> source_functions);
+
+  Function* function() const { return function_.get(); }
+
+  // Declares that node 'source' from a source function maps
+  // to node 'map_target' in the integrated_function.
+  absl::Status SetNodeMapping(const Node* source, Node* map_target);
+
+  // Returns the integrated node that 'original' maps to, if it
+  // exists. Otherwise, return an error status.
+  absl::StatusOr<Node*> GetNodeMapping(const Node* original) const;
+
+  // Returns the original nodes that map to 'map_target' in the integrated
+  // function.
+  absl::StatusOr<const absl::flat_hash_set<const Node*>*> GetNodesMappedToNode(
+      const Node* map_target) const;
+
+  // Returns true if 'node' is mapped to a node in the integrated function.
+  bool HasMapping(const Node* node) const;
+
+  // Returns true if other nodes map to 'node'
+  bool IsMappingTarget(const Node* node) const;
+
+  // Returns true if 'node' is in the integrated function.
+  bool IntegrationFunctionOwnsNode(const Node* node) const {
+    return function_.get() == node->function();
+  }
+
+ private:
+  // Track mapping of original function nodes to integrated function nodes.
+  absl::flat_hash_map<const Node*, Node*>
+      original_node_to_integrated_node_map_;
+  absl::flat_hash_map<const Node*, absl::flat_hash_set<const Node*>>
+      integrated_node_to_original_nodes_map_;
+
+  // Integrated function.
+  std::unique_ptr<Function> function_;
+  Package* package_;
+};
+
 // Class used to integrate separate functions into a combined, reprogrammable
 // circuit that can be configured to have the same functionality as the
 // input functions. The builder will attempt to construct the integrated
-// function such that hardware common to the input functions is consolidated.
+// funciton such that hardware common to the input functions is consolidated.
 // Note that this is distinct from function inlining. With inlining, a function
 // call is replaced by the body of the function that is called.  With function
 // integration, we take separate functions that do not call each other and
@@ -39,10 +87,17 @@ class IntegrationBuilder {
   }
 
   Package* package() { return package_.get(); }
+  absl::Span<const Function* const> source_functions() const {
+    return source_functions_;
+  }
 
   // Produce an integrated function implementing all
   // all functions in source_functions_.
   absl::StatusOr<Function*> Build();
+
+  // Returns an empty function with a signature that
+  // packs source function parameters into separate tuples.
+  absl::StatusOr<Function*> GetNewFunctionStub();
 
  private:
   // Copy the source functions into a common package.
