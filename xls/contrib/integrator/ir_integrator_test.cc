@@ -55,7 +55,6 @@ fn __dot__main(a: bits[32][3], b: bits[32][3]) -> bits[32] {
   literal.6: bits[32] = literal(value=0, id=6, pos=0,8,10)
   literal.7: bits[32] = literal(value=3, id=7, pos=0,5,49)
   ret counted_for.16: bits[32] = counted_for(literal.6, trip_count=3, stride=1, body=____dot__main_counted_for_0_body, invariant_args=[a, b], id=16, pos=0,5,5)
-  ret add.3: bits[32] = add(a, b, pos=0,1,4)
 }
 )";
   XLS_ASSERT_OK_AND_ASSIGN(auto p, Parser::ParsePackage(program));
